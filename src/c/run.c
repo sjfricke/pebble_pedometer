@@ -4,7 +4,7 @@
  */
 
 #include <pebble.h>
-#include <run.h>
+#include "src/c/run.h"
 #include <math.h>
 
 // Total Steps (TS)
@@ -92,6 +92,7 @@ char *cal = "Regular Sensitivity";
 
 // stores total steps since app install
 static long totalSteps = TSD;
+
 
 void start_callback(int index, void *ctx) {
 	accel_data_service_subscribe(0, NULL);
@@ -584,6 +585,17 @@ void update_ui_callback() {
 		snprintf(buf, sizeof(buf), "%ld", pedometerCount);
 		text_layer_set_text(pedCount, buf);
 
+    if ((int)pedometerCount % 25 == 0) {
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "COUNT: %ld", pedometerCount); 
+      DictionaryIterator *iter;
+	
+    	app_message_outbox_begin(&iter);
+    	dict_write_cstring(iter, 1, "I'm a Pebble!");
+    	
+    	dict_write_end(iter);
+      app_message_outbox_send();
+    }
+    
 		static char buf2[] = "123456890abcdefghijkl";
 		snprintf(buf2, sizeof(buf2), "%ld in Total", tempTotal);
 		menu_items[2].subtitle = buf2;
